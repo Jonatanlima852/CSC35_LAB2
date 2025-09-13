@@ -91,23 +91,46 @@ No WSL cliente:
 gcc client.c -o client
 ```
 
-### 5.2. Rodar
+### 5.2. Modo Interativo (Recomendado)
 
 ```bash
-./client 192.168.x.y LAST
+# Conectar e usar comandos interativos
+./client 192.168.x.y
+Conectado ao servidor. Comandos: GET <file>, LAST, QUIT
+
+# Exemplos de uso:
+> GET teste.txt
+Cabeçalho: OK 234
+[conteúdo do arquivo]
+
+> GET arquivo_inexistente.txt
+Cabeçalho: ERR 404 NotFound
+
+> GET
+Cabeçalho: ERR 400 BadRequest
+
+> LAST
+Cabeçalho: LASTACCESS 2024-01-15T14:30:25-0300
+
+> QUIT
+Conexão encerrada.
 ```
 
-ou
+### 5.3. Modo Não-Interativo (Compatibilidade)
 
 ```bash
-./client 192.168.x.y /caminho/para/arquivo
+# Requisição única de arquivo
+./client 192.168.x.y teste.txt
+
+# Requisição de último acesso (cada execução cria nova conexão)
+./client 192.168.x.y LAST
 ```
 
 > Importante: sempre usar o IP do Windows do PC servidor, nunca o IP do WSL.
 
 ---
 
-6. Armadilhas comuns
+## 6. Armadilhas comuns
 
 - O IP do WSL muda → recriar portproxy sempre que reiniciar o WSL.
 
@@ -115,4 +138,8 @@ ou
 
 - Se pedir arquivo inexistente → servidor responde ERR 404 NotFound.
 
-- O cliente exige 2 argumentos: IP + comando (LAST ou caminho de arquivo).
+- O modo interativo mantém a conexão aberta, permitindo que LAST funcione corretamente.
+
+- O modo não-interativo exige 2 argumentos: IP + comando (LAST ou caminho de arquivo).
+
+- Cada resposta mostra o cabeçalho para facilitar debug e entendimento do protocolo.
